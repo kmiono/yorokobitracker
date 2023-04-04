@@ -38,19 +38,26 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int _counterExercise = 0;
+  bool _valueFlg = false;
 
   void _incrementCounter() {
     setState(() {
-      _counter++;
+      if (_valueFlg) {
+        _counter++;
+      }
       _setPrefItems(); // Shared Preferenceに値を保存する。
     });
   }
 
-  void _incrementExerciseCounter() {
-    setState(() {
-      _counterExercise++;
-      _setPrefItems();
-    });
+  String get _message {
+    String _messageText;
+    String _messageCounter;
+    if (_valueFlg) {
+      _messageText = "運動頑張った回数:";
+    } else {
+      _messageText = "頑張った回数:";
+    }
+    return _messageText;
   }
 
   // Shared Preferenceに値を保存されているデータを読み込んで_counterにセットする。
@@ -96,69 +103,51 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text("ほめるビットラッカー"),
       ),
-      body: Container(
-        width: double.infinity,
-        height: 500,
-        padding: EdgeInsets.only(top: 300.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Column(
-              children: [
-                const Text("頑張った回数:"),
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                OutlinedButton(
-                  child: const Text(
-                    'ほめる',
-                    style: TextStyle(fontSize: 50),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    fixedSize: Size(250, 100),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () => {
-                    _incrementCounter(),
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return HomeruPage();
-                    }))
-                  },
-                ),
-              ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //追加
+            Text(_message),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("運動を頑張った回数:"),
-                Text(
-                  '$_counterExercise',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                OutlinedButton(
-                  child: const Text(
-                    'ほめる',
-                    style: TextStyle(fontSize: 50),
+            //追加ここまで
+            DropdownButton(
+                items: [
+                  DropdownMenuItem(
+                    value: false,
+                    child: Text("とにかくほめる"),
                   ),
-                  style: OutlinedButton.styleFrom(
-                    fixedSize: Size(250, 100),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                  DropdownMenuItem(
+                    value: true,
+                    child: Text("運動した"),
                   ),
-                  onPressed: () => {
-                    _incrementExerciseCounter(),
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return ExerciseHomeruPage();
-                    }))
-                  },
+                ],
+                value: _valueFlg,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _valueFlg = value!;
+                  });
+                }),
+            OutlinedButton(
+              child: const Text(
+                'ほめる',
+                style: TextStyle(fontSize: 50),
+              ),
+              style: OutlinedButton.styleFrom(
+                fixedSize: Size(250, 100),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ],
+              ),
+              onPressed: () => {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return HomeruPage();
+                }))
+              },
             ),
           ],
         ),
